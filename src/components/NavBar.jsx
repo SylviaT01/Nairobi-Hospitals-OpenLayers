@@ -26,21 +26,3 @@ const NavBar = ({ map }) => {
 }
 
 export default NavBar;
-
-
-// import React from 'react';
-// import HospitalSearch from './HospitalSearch';
-
-// const NavBar = ({ map }) => {
-//   return (
-//     <header className="bg-blue-900 text-black flex justify-between items-center p-4 mb-10">
-//       <h1 className="text-xl font-bold">Hospitals</h1>
-//       <HospitalSearch map={map} /> {/* Pass map to HospitalSearch */}
-//       <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-//         Search
-//       </button>
-//     </header>
-//   );
-// };
-
-// export default NavBar;
