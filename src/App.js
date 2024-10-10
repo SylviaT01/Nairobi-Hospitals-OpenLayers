@@ -1,11 +1,14 @@
-import React from 'react';
-import NairobiMap from './components/Map.jsx'; 
+import React, { useState } from 'react';
+import NairobiMap from './components/Map.jsx';
+import NavBar from './components/NavBar.jsx';
 
 function App() {
+  const [map, setMap] = useState(null);  // State to hold the map instance
+
   return (
     <div className="App">
-      <h1>Hospitals in Nairobi</h1>
-      <NairobiMap /> 
+      <NavBar map={map}  />  
+      <NairobiMap setMapRef={setMap} /> 
     </div>
   );
 }
