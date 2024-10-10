@@ -1,71 +1,52 @@
-# Getting Started with Create React App
+# Nairobi Hospitals Map
+This project visualizes the locations of hospitals in Nairobi using OpenLayers. It displays the hospitals on an interactive map with custom markers, along with a legend. The map also includes the boundary of Nairobi County for context.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Features
+- **Interactive Map**: View and interact with the map of Nairobi, displaying hospital locations.
+- **Custom Markers**: Hospitals are represented using **custom icons** (markers) for better visibility and understanding.
+- **Legend**: A dynamic **legend** showing the hospital markers and the Nairobi County boundary.
+- **Boundary Layer**: Visualizes the boundary of **Nairobi County** on the map.
 
-## Available Scripts
+## Tech Stack
+- **React**: Front-end framework for building the user interface.
+- **OpenLayers**: Mapping library for creating and interacting with maps.
+- **GeoJSON**: Format for encoding geographic data.
+- **Tailwind CSS**: Utility-first CSS framework for styling the components.
 
-In the project directory, you can run:
+## Get Started
+1. Clone the repository:
+```bash
+git@github.com:SylviaT01/Nairobi-Hospitals-OpenLayers.git
+```
+2. Install dependencies:
+```bash
+npm install
+```
+- Install OpenLayers
+```bash
+npm install ol
+```
+3. Start the development server:
+```bash
+npm start
+```
+## Requirements
+To run and contribute to this project, you will need the following:
 
-### `npm start`
+- **Programming Knowledge**:
+  - HTML
+  - JavaScript
+- **Code Editor**: Visual Studio Code or any other code editor of your choice
+- **Basic Understanding of Web Development**: Knowledge of HTML, CSS, and JavaScript for front-end development
+- **React Framework**: Familiarity with React for building user interfaces
+- **Basic Understanding of GeoJSON**: For handling geographical data
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Contributions
+Contributions are welcome! If you have any ideas or suggestions for improving the project, please feel free to **fork the repository**, **submit a pull request**, or **open an issue** to discuss your suggestions. All contributions are appreciated, and they help make this project better for everyone.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Author
+[Sylvia Chebet](https://github.com/SylviaT01)
 
-### `npm test`
+## Copyright and License Information
+The project is licensed under [MIT License](LICENSE)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Nairobi-Hospitals-OpenLayers
