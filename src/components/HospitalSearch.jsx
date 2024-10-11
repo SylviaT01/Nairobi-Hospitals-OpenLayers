@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { transform } from 'ol/proj';  // Import the transform function to reproject coordinates
+import { transform } from 'ol/proj'; 
 
 const HospitalSearch = ({ map }) => {
   const [hospitals, setHospitals] = useState([]);
@@ -13,7 +13,7 @@ const HospitalSearch = ({ map }) => {
       .then((data) => {
         const features = data.features.map((feature) => ({
           name: feature.properties.name,
-          coordinates: feature.geometry.coordinates,  // Get the coordinates
+          coordinates: feature.geometry.coordinates, 
         }));
         setHospitals(features);
       })
@@ -34,7 +34,6 @@ const HospitalSearch = ({ map }) => {
 
   // Handle hospital selection from the search results
   const handleHospitalSelect = (hospital) => {
-    // Ensure the map object is defined
     if (!map) {
       console.error('Map object is undefined');
       return;
@@ -42,13 +41,12 @@ const HospitalSearch = ({ map }) => {
 
     // Reproject the coordinates from EPSG:4326 (WGS84) to EPSG:3857 (Web Mercator)
     const [lon, lat] = hospital.coordinates;
-    const projectedCoordinates = transform([lon, lat], 'EPSG:4326', 'EPSG:3857');  // Reproject coordinates
-
+    const projectedCoordinates = transform([lon, lat], 'EPSG:4326', 'EPSG:3857');  
     const view = map.getView();
-    view.setCenter(projectedCoordinates);  // Set the map center to the reprojected coordinates
-    view.setZoom(20);  // Zoom in to the hospital
+    // Set the map center to the reprojected coordinates
+    view.setCenter(projectedCoordinates);  
+    view.setZoom(20); 
 
-    // Optionally clear the search after selecting
     setQuery('');
     setFilteredHospitals([]);
   };
