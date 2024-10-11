@@ -7,9 +7,7 @@ const NavBar = ({ map }) => {
       <header className="bg-blue-900 flex justify-between items-center p-4">
         <h1 className="text-xl font-bold">Hospitals</h1>
         <HospitalSearch map={map} />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Search
-        </button>
+        <p className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Join our team</p>
       </header>
       <nav className="bg-slate-200 shadow-md">
         <ul className="flex space-x-6 p-4">
