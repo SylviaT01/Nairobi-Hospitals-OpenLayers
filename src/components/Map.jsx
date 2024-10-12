@@ -5,63 +5,56 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { OSM } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
-import { Style, Circle as CircleStyle, Icon, Stroke, Fill } from 'ol/style';
+import { Style, Icon, Stroke, Fill } from 'ol/style';
 import { transform } from 'ol/proj';
 import { Overlay } from 'ol';
 
 const NairobiMap = ({ setMapRef }) => {
-    // Reference to track the map instance
     const mapRef = useRef(null);
     const [legendItems, setLegendItems] = useState([]);
     const [hospitalCounts, setHospitalCounts] = useState({});
-
+    const [hospitalsInSubCounty, setHospitalsInSubCounty] = useState([]);
+    const [selectedSubCounty, setSelectedSubCounty] = useState('Dagoretti');
+    const [subCounties, setSubCounties] = useState([]);
+    const [hospitals, setHospitals] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);  // Track current page
+    const hospitalsPerPage = 8;  // Number of hospitals per page
 
     useEffect(() => {
-        // Prevent map from being created again if already initialized
         if (mapRef.current) return;
 
-        // Create the OpenLayers map
         const map = new Map({
-            // The div ID where the map will be rendered
             target: 'map',
             layers: [
                 new TileLayer({
-                    // OpenStreetMap as the basemap
                     source: new OSM(),
                 }),
             ],
             view: new View({
-                // Transform from WGS84 to Web Mercator
                 center: transform([36.817223, -1.286389], 'EPSG:4326', 'EPSG:3857'),
                 zoom: 12,
             }),
         });
 
-        // Store map instance in the ref
         mapRef.current = map;
         setMapRef(mapRef.current);
 
-        // Create an overlay (popup) to display the hospital name
         const popup = new Overlay({
             element: document.getElementById('popup'),
-            // Automatically pan the map to show the popup
             autoPan: true,
         });
-        // Add the popup overlay to the map
         map.addOverlay(popup);
 
         // Load GeoJSON data for hospitals
-        fetch('assets/nairobi-hospitals.geojson')
+        fetch('/assets/hospitals-sub-county.geojson')
             .then((response) => response.json())
             .then((data) => {
                 const vectorSource = new VectorSource({
                     features: new GeoJSON().readFeatures(data, {
-                        // Reproject the features to Web Mercator
                         featureProjection: 'EPSG:3857',
                     }),
                 });
 
-                // Define a custom style for the hospitals using Icon
                 const hospitalStyle = new Style({
                     image: new Icon({
                         src: '/assets/hospital.png',
@@ -76,40 +69,42 @@ const NairobiMap = ({ setMapRef }) => {
                 });
 
                 map.addLayer(hospitalLayer);
-                fetch('/assets/Hospital_count.geojson')  // Replace with the actual path to the hospital count data
+
+                // Extract hospitals and store them
+                const hospitalsData = vectorSource.getFeatures().map((feature) => ({
+                    name: feature.get('name'),
+                    coordinates: feature.getGeometry().getCoordinates(),
+                    subCounty: feature.get('ADM2_EN_6'),
+                }));
+                setHospitals(hospitalsData);
+
+                // Filter hospitals by sub-county
+                const hospitalsInSubCounty = filterHospitalsBySubCounty(hospitalsData, selectedSubCounty);
+                setHospitalsInSubCounty(hospitalsInSubCounty);
+
+                // Count hospitals per sub-county (already done)
+                fetch('/assets/Hospital_count.geojson')
                     .then((response) => response.json())
                     .then((countData) => {
-                        // Ensure you're extracting only the relevant data (numbers or strings)
                         const countObject = {};
                         countData.features.forEach((feature) => {
-                            const subCountyName = feature.properties['ADM2_EN']; // Sub-county name
-                            const hospitalCount = feature.properties['hospital-count']; // The count of hospitals in that sub-county
+                            const subCountyName = feature.properties['ADM2_EN'];
+                            const hospitalCount = feature.properties['hospital-count'];
                             countObject[subCountyName] = hospitalCount;
                         });
                         setHospitalCounts(countObject);
                     })
                     .catch((error) => console.error('Error fetching hospital count data:', error));
 
-                // Update legend items dynamically
+                // Update legend items
                 setLegendItems([
-                    {
-                        label: 'Hospitals',
-                        iconSrc: '/assets/hospital.png',
-                    },
-                    {
-                        label: 'Nairobi County',
-                        color: 'black',
-                        symbol: '■',
-                    },
-                    {
-                        label: 'Sub-County Boundary',
-                        color: 'gray',
-                        symbol: '■',
-                    },
+                    { label: 'Hospitals', iconSrc: '/assets/hospital.png' },
+                    { label: 'Nairobi County', color: 'black', symbol: '■' },
+                    { label: 'Sub-County Boundary', color: 'gray', symbol: '■' },
                 ]);
             });
 
-        // Load GeoJSON data for the Nairobi boundary
+        // Load GeoJSON data for Nairobi boundary
         fetch('/assets/nrb-boundary.geojson')
             .then((response) => response.json())
             .then((data) => {
@@ -120,23 +115,18 @@ const NairobiMap = ({ setMapRef }) => {
                 });
 
                 const boundaryStyle = new Style({
-                    stroke: new Stroke({
-                        color: 'black',
-                        width: 2,
-                    }),
-                    fill: new Fill({
-                        color: 'rgba(0, 0, 0, 0)',
-                    }),
+                    stroke: new Stroke({ color: 'black', width: 2 }),
+                    fill: new Fill({ color: 'rgba(0, 0, 0, 0)' }),
                 });
 
                 const boundaryLayer = new VectorLayer({
                     source: boundarySource,
-                    // Apply style to the vector layer
                     style: boundaryStyle,
                 });
-                // Add the boundary layer to the map
                 map.addLayer(boundaryLayer);
             });
+
+        // Load sub-county GeoJSON
         fetch('/assets/nrb-sub-county.geojson')
             .then((response) => response.json())
             .then((data) => {
@@ -145,59 +135,61 @@ const NairobiMap = ({ setMapRef }) => {
                         featureProjection: 'EPSG:3857',
                     }),
                 });
+
                 const subCountyStyle = new Style({
-                    stroke: new Stroke({
-                        color: 'black',
-                        width: 2,
-                    }),
-                    fill: new Fill({
-                        color: 'rgba(0, 0, 0, 0)',
-                    }),
+                    stroke: new Stroke({ color: 'black', width: 2 }),
+                    fill: new Fill({ color: 'rgba(0, 0, 0, 0)' }),
                 });
 
                 const subcountyLayer = new VectorLayer({
                     source: subCountySource,
                     style: subCountyStyle,
                 });
-                // Add the subcounty layer to the map
                 map.addLayer(subcountyLayer);
-                // Pass sub-county layer to parent component
-                
+
+                // Extract sub-county names
+                const subCountyNames = data.features.map((feature) => feature.properties['ADM2_EN']);
+                setSubCounties(subCountyNames);
             });
 
-    }, [setMapRef]);
+    }, [setMapRef, selectedSubCounty]);
+
+    const filterHospitalsBySubCounty = (hospitals, subCountyName) => {
+        return hospitals.filter((hospital) => hospital.subCounty === subCountyName);
+    };
+
+    const handleSubCountyChange = (event) => {
+        const selectedSubCounty = event.target.value;
+        setSelectedSubCounty(selectedSubCounty);
+
+        // Filter hospitals based on the selected sub-county
+        const hospitalsInSubCounty = filterHospitalsBySubCounty(hospitals, selectedSubCounty);
+        setHospitalsInSubCounty(hospitalsInSubCounty);
+        setCurrentPage(1);
+    };
+
+    const handleViewMore = () => {
+        setCurrentPage(currentPage + 1);
+    };
+
+    // Paginate hospitals
+    const indexOfLastHospital = currentPage * hospitalsPerPage;
+    const indexOfFirstHospital = indexOfLastHospital - hospitalsPerPage;
+    const currentHospitals = hospitalsInSubCounty.slice(indexOfFirstHospital, indexOfLastHospital);
 
     return (
         <div className="flex bg-slate-200">
             <div className="flex-grow">
-                <div id="map" className="w-full h-[600px] rounded-lg shadow-lg"></div>
+                <div id="map" className="w-full h-[700px] rounded-lg shadow-lg"></div>
             </div>
 
-            <div className="w-48 p-4 bg-white shadow-md">
-                <h2 className="text-xl font-bold mb-2 underline">Hospital Counts per Sub-County</h2>
-                <ul>
-                    {Object.entries(hospitalCounts).map(([subCountyName, count], index) => (
-                        <li key={index} className="mb-2">
-                            {/* Ensure count is valid and render */}
-                            <strong>{subCountyName}:</strong> {count ? count : 0} hospitals
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-
-
-            <div className="w-48 p-4 bg-white shadow-md">
-                <h2 className="text-xl font-bold mb-2 underline">Legend</h2>
+            <div className="w-52 p-4 bg-white shadow-md">
+                <h2 className="text-lg font-semibold mb-2 underline">Legend</h2>
                 <ul>
                     {legendItems.map((item, index) => (
                         <li key={index} className="flex items-center mb-2">
                             {item.iconSrc ? (
-                                <img
-                                    src={item.iconSrc}
-                                    alt={item.label}
-                                    className="w-5 h-5 mr-2"
-                                />
+                                <img src={item.iconSrc} alt={item.label} className="w-5 h-5 mr-2" />
                             ) : (
                                 <span
                                     style={{
@@ -215,11 +207,45 @@ const NairobiMap = ({ setMapRef }) => {
                         </li>
                     ))}
                 </ul>
+                <div className="w-54 p-2 bg-white shadow-md">
+                    <h2 className="text-md font-bold mb-2 underline">Select a Sub-County</h2>
+                    <select
+                        value={selectedSubCounty}
+                        onChange={handleSubCountyChange}
+                        className="w-full p-2 mb-4 text-xs"
+                    >
+                        {subCounties.map((subCounty, index) => (
+                            <option key={index} value={subCounty}>
+                                {subCounty}
+                            </option>
+                        ))}
+                    </select>
+
+                    <h2 className="text-md font-semibold mb-2 underline">Hospitals in {selectedSubCounty}({hospitalsInSubCounty.length} total)</h2>
+                    <ul className="gap-2">
+                        {currentHospitals.length > 0 ? (
+                            currentHospitals.map((hospital, index) => (
+                                <li key={index} className="mb-2 text-sm">
+                                    - {hospital.name}
+                                </li>
+                            ))
+                        ) : (
+                            <li>No hospitals found in {selectedSubCounty}</li>
+                        )}
+                    </ul>
+
+                    {hospitalsInSubCounty.length > currentPage * hospitalsPerPage && (
+                        <button
+                            onClick={handleViewMore}
+                            className="mt-2 p-2 w-full bg-blue-700 text-white rounded hover:bg-blue-900"
+                        >
+                            View More
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
 };
 
 export default NairobiMap;
-
-
