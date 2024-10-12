@@ -10,7 +10,8 @@ import { transform } from 'ol/proj';
 import { Overlay } from 'ol';
 
 const NairobiMap = ({ setMapRef }) => {
-    const mapRef = useRef(null);  // Reference to track the map instance
+    // Reference to track the map instance
+    const mapRef = useRef(null);  
     const [legendItems, setLegendItems] = useState([]);
 
     useEffect(() => {

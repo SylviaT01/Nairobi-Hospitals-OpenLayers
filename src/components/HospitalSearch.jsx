@@ -6,7 +6,7 @@ const HospitalSearch = ({ map }) => {
   const [query, setQuery] = useState('');
   const [filteredHospitals, setFilteredHospitals] = useState([]);
 
-  // Fetch the GeoJSON data for hospitals when the component mounts
+  // Fetch the GeoJSON data for hospitals
   useEffect(() => {
     fetch('assets/nairobi-hospitals.geojson')
       .then((response) => response.json())
@@ -25,7 +25,7 @@ const HospitalSearch = ({ map }) => {
     const searchTerm = event.target.value.toLowerCase();
     setQuery(searchTerm);
 
-    // Filter hospitals by name based on search query
+    // Filter hospitals by name based
     const filtered = hospitals.filter((hospital) =>
       hospital.name.toLowerCase().includes(searchTerm)
     );
@@ -39,7 +39,7 @@ const HospitalSearch = ({ map }) => {
       return;
     }
 
-    // Reproject the coordinates from EPSG:4326 (WGS84) to EPSG:3857 (Web Mercator)
+   
     const [lon, lat] = hospital.coordinates;
     const projectedCoordinates = transform([lon, lat], 'EPSG:4326', 'EPSG:3857');  
     const view = map.getView();
