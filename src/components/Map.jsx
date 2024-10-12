@@ -83,25 +83,21 @@ const NairobiMap = ({ setMapRef }) => {
                 setHospitalsInSubCounty(hospitalsInSubCounty);
 
                 // Count hospitals per sub-county (already done)
-                fetch('/assets/Hospital_count.geojson')
-                    .then((response) => response.json())
-                    .then((countData) => {
-                        const countObject = {};
-                        countData.features.forEach((feature) => {
-                            const subCountyName = feature.properties['ADM2_EN'];
-                            const hospitalCount = feature.properties['hospital-count'];
-                            countObject[subCountyName] = hospitalCount;
-                        });
-                        setHospitalCounts(countObject);
-                    })
-                    .catch((error) => console.error('Error fetching hospital count data:', error));
+                // fetch('/assets/Hospital_count.geojson')
+                //     .then((response) => response.json())
+                //     .then((countData) => {
+                //         const countObject = {};
+                //         countData.features.forEach((feature) => {
+                //             const subCountyName = feature.properties['ADM2_EN'];
+                //             const hospitalCount = feature.properties['hospital-count'];
+                //             countObject[subCountyName] = hospitalCount;
+                //         });
+                //         setHospitalCounts(countObject);
+                //     })
+                //     .catch((error) => console.error('Error fetching hospital count data:', error));
 
                 // Update legend items
-                setLegendItems([
-                    { label: 'Hospitals', iconSrc: '/assets/hospital.png' },
-                    { label: 'Nairobi County', color: 'black', symbol: '■' },
-                    { label: 'Sub-County Boundary', color: 'gray', symbol: '■' },
-                ]);
+                
             });
 
         // Load GeoJSON data for Nairobi boundary
@@ -115,7 +111,7 @@ const NairobiMap = ({ setMapRef }) => {
                 });
 
                 const boundaryStyle = new Style({
-                    stroke: new Stroke({ color: 'black', width: 2 }),
+                    stroke: new Stroke({ color: 'black', width: 3 }),
                     fill: new Fill({ color: 'rgba(0, 0, 0, 0)' }),
                 });
 
@@ -137,7 +133,7 @@ const NairobiMap = ({ setMapRef }) => {
                 });
 
                 const subCountyStyle = new Style({
-                    stroke: new Stroke({ color: 'black', width: 2 }),
+                    stroke: new Stroke({ color: 'gray', width: 2 }),
                     fill: new Fill({ color: 'rgba(0, 0, 0, 0)' }),
                 });
 
@@ -151,6 +147,11 @@ const NairobiMap = ({ setMapRef }) => {
                 const subCountyNames = data.features.map((feature) => feature.properties['ADM2_EN']);
                 setSubCounties(subCountyNames);
             });
+            setLegendItems([
+                { label: 'Hospitals', iconSrc: '/assets/hospital.png' },
+                { label: 'Nairobi County', color: 'black', symbol: '■' },
+                { label: 'Sub-County Boundary', color: 'gray', symbol: '■' },
+            ]);
 
     }, [setMapRef, selectedSubCounty]);
 
