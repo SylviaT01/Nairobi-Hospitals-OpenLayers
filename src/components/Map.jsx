@@ -11,42 +11,42 @@ import { Overlay } from 'ol';
 
 const NairobiMap = ({ setMapRef }) => {
     // Reference to track the map instance
-    const mapRef = useRef(null);  
+    const mapRef = useRef(null);
     const [legendItems, setLegendItems] = useState([]);
 
     useEffect(() => {
         // Prevent map from being created again if already initialized
-        if (mapRef.current) return;  
+        if (mapRef.current) return;
 
         // Create the OpenLayers map
         const map = new Map({
             // The div ID where the map will be rendered
-            target: 'map',  
+            target: 'map',
             layers: [
                 new TileLayer({
                     // OpenStreetMap as the basemap
-                    source: new OSM(),  
+                    source: new OSM(),
                 }),
             ],
             view: new View({
                 // Transform from WGS84 to Web Mercator
-                center: transform([36.817223, -1.286389], 'EPSG:4326', 'EPSG:3857'), 
+                center: transform([36.817223, -1.286389], 'EPSG:4326', 'EPSG:3857'),
                 zoom: 12,
             }),
         });
 
         // Store map instance in the ref
-        mapRef.current = map;  
+        mapRef.current = map;
         setMapRef(mapRef.current);
 
         // Create an overlay (popup) to display the hospital name
         const popup = new Overlay({
-            element: document.getElementById('popup'), 
+            element: document.getElementById('popup'),
             // Automatically pan the map to show the popup
-            autoPan: true,  
+            autoPan: true,
         });
         // Add the popup overlay to the map
-        map.addOverlay(popup);  
+        map.addOverlay(popup);
 
         // Load GeoJSON data for hospitals
         fetch('assets/nairobi-hospitals.geojson')
@@ -55,16 +55,16 @@ const NairobiMap = ({ setMapRef }) => {
                 const vectorSource = new VectorSource({
                     features: new GeoJSON().readFeatures(data, {
                         // Reproject the features to Web Mercator
-                        featureProjection: 'EPSG:3857',  
+                        featureProjection: 'EPSG:3857',
                     }),
                 });
 
                 // Define a custom style for the hospitals using Icon
                 const hospitalStyle = new Style({
                     image: new Icon({
-                        src: '/assets/hospital.png', 
-                        scale: 0.017,  
-                        anchor: [0.5, 1],  
+                        src: '/assets/hospital.png',
+                        scale: 0.017,
+                        anchor: [0.5, 1],
                     }),
                 });
 
@@ -86,6 +86,11 @@ const NairobiMap = ({ setMapRef }) => {
                         color: 'black',
                         symbol: '■',
                     },
+                    {
+                        label: 'Sub-County Boundary',
+                        color: 'gray',
+                        symbol: '■',
+                    },
                 ]);
             });
 
@@ -95,7 +100,7 @@ const NairobiMap = ({ setMapRef }) => {
             .then((data) => {
                 const boundarySource = new VectorSource({
                     features: new GeoJSON().readFeatures(data, {
-                        featureProjection: 'EPSG:3857', 
+                        featureProjection: 'EPSG:3857',
                     }),
                 });
 
@@ -105,18 +110,44 @@ const NairobiMap = ({ setMapRef }) => {
                         width: 2,
                     }),
                     fill: new Fill({
-                        color: 'rgba(0, 0, 0, 0)',  
+                        color: 'rgba(0, 0, 0, 0)',
                     }),
                 });
 
                 const boundaryLayer = new VectorLayer({
                     source: boundarySource,
                     // Apply style to the vector layer
-                    style: boundaryStyle,  
+                    style: boundaryStyle,
                 });
                 // Add the boundary layer to the map
                 map.addLayer(boundaryLayer);
             });
+        fetch('/assets/nrb-sub-county.geojson')
+            .then((response) => response.json())
+            .then((data) => {
+                const subCountySource = new VectorSource({
+                    features: new GeoJSON().readFeatures(data, {
+                        featureProjection: 'EPSG:3857',
+                    }),
+                });
+                const subCountyStyle = new Style({
+                    stroke: new Stroke({
+                        color: 'black',
+                        width: 2,
+                    }),
+                    fill: new Fill({
+                        color: 'rgba(0, 0, 0, 0)',
+                    }),
+                });
+
+                const subcountyLayer = new VectorLayer({
+                    source: subCountySource,
+                    style: subCountyStyle,
+                });
+                    // Add the subcounty layer to the map
+                map.addLayer(subcountyLayer);
+            });
+
     }, [setMapRef]);
 
     return (
@@ -125,7 +156,7 @@ const NairobiMap = ({ setMapRef }) => {
                 <div id="map" className="w-full h-[600px] rounded-lg shadow-lg"></div>
             </div>
 
-            
+
             <div className="w-48 p-4 bg-white shadow-md">
                 <h2 className="text-xl font-bold mb-2 underline">Legend</h2>
                 <ul>
@@ -133,9 +164,9 @@ const NairobiMap = ({ setMapRef }) => {
                         <li key={index} className="flex items-center mb-2">
                             {item.iconSrc ? (
                                 <img
-                                    src={item.iconSrc} 
+                                    src={item.iconSrc}
                                     alt={item.label}
-                                    className="w-5 h-5 mr-2"  
+                                    className="w-5 h-5 mr-2"
                                 />
                             ) : (
                                 <span
