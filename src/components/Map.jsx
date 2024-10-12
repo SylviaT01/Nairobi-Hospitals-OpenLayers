@@ -81,22 +81,6 @@ const NairobiMap = ({ setMapRef }) => {
                 // Filter hospitals by sub-county
                 const hospitalsInSubCounty = filterHospitalsBySubCounty(hospitalsData, selectedSubCounty);
                 setHospitalsInSubCounty(hospitalsInSubCounty);
-
-                // Count hospitals per sub-county (already done)
-                // fetch('/assets/Hospital_count.geojson')
-                //     .then((response) => response.json())
-                //     .then((countData) => {
-                //         const countObject = {};
-                //         countData.features.forEach((feature) => {
-                //             const subCountyName = feature.properties['ADM2_EN'];
-                //             const hospitalCount = feature.properties['hospital-count'];
-                //             countObject[subCountyName] = hospitalCount;
-                //         });
-                //         setHospitalCounts(countObject);
-                //     })
-                //     .catch((error) => console.error('Error fetching hospital count data:', error));
-
-                // Update legend items
                 
             });
 
